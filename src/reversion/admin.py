@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from contextlib import contextmanager
 
 from django.db import models, transaction, connection
-from django.conf.urls import url
+from django.urls import re_path as url
 from django.contrib import admin
 from django.contrib.admin import options
 from django.contrib.admin.utils import unquote, quote
@@ -14,12 +14,12 @@ try:
     from django.contrib.contenttypes.fields import GenericRelation
 except ImportError:  # Django < 1.9  pragma: no cover
     from django.contrib.contenttypes.generic import GenericInlineModelAdmin, GenericRelation
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.shortcuts import get_object_or_404, render
 from django.utils.text import capfirst
-from django.utils.translation import ugettext as _
-from django.utils.encoding import force_text
+from django.utils.translation import gettext as _
+from django.utils.encoding import force_str
 from django.utils.formats import localize
 
 from reversion.models import Version
@@ -255,7 +255,7 @@ class VersionAdmin(admin.ModelAdmin):
             opts = opts,
             app_label = opts.app_label,
             module_name = capfirst(opts.verbose_name),
-            title = _("Recover deleted %(name)s") % {"name": force_text(opts.verbose_name_plural)},
+            title = _("Recover deleted %(name)s") % {"name": force_str(opts.verbose_name_plural)},
             deleted = deleted,
         )
         context.update(extra_context or {})
