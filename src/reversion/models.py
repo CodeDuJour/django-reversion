@@ -11,8 +11,8 @@ from django.conf import settings
 from django.core import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, IntegrityError, transaction
-from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.translation import gettext_lazy as _
+from django.utils.encoding import force_str
 
 from reversion.errors import RevertError
 
@@ -40,7 +40,6 @@ def safe_revert(versions):
 UserModel = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 
-@python_2_unicode_compatible
 class Revision(models.Model):
 
     """A group of related object versions."""
@@ -93,7 +92,7 @@ class Revision(models.Model):
 
     def __str__(self):
         """Returns a unicode representation."""
-        return ", ".join(force_text(version) for version in self.version_set.all())
+        return ", ".join(force_str(version) for version in self.version_set.all())
 
     #Meta
     class Meta:
@@ -126,7 +125,6 @@ class VersionQuerySet(models.QuerySet):
             last_serialized_data = version.serialized_data
 
 
-@python_2_unicode_compatible
 class Version(models.Model):
 
     """A saved version of a database model."""
@@ -164,7 +162,7 @@ class Version(models.Model):
     def object_version(self):
         """The stored version of the model."""
         data = self.serialized_data
-        data = force_text(data.encode("utf8"))
+        data = force_str(data.encode("utf8"))
         return list(serializers.deserialize(self.format, data, ignorenonexistent=True))[0]
 
     @property
@@ -188,7 +186,7 @@ class Version(models.Model):
                     continue
                 content_type = ContentType.objects.get_for_model(parent_class)
                 if field:
-                    parent_id = force_text(getattr(obj, field.attname))
+                    parent_id = force_str(getattr(obj, field.attname))
                 else:
                     parent_id = obj.pk
                 try:

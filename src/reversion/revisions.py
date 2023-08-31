@@ -18,7 +18,7 @@ from django.db import models, connection, transaction
 from django.db.models import Q, Max
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from reversion.signals import pre_revision_commit, post_revision_commit
 from reversion.errors import RevisionManagementError, RegistrationError
@@ -98,7 +98,7 @@ class VersionAdapter(object):
     def get_version_data(self, obj, db=None):
         """Creates the version data to be saved to the version model."""
         from reversion.models import has_int_pk
-        object_id = force_text(obj.pk)
+        object_id = force_str(obj.pk)
         content_type = ContentType.objects.db_manager(db).get_for_model(obj)
         if has_int_pk(obj.__class__):
             object_id_int = int(obj.pk)
@@ -110,7 +110,7 @@ class VersionAdapter(object):
             "content_type": content_type,
             "format": self.get_serialization_format(),
             "serialized_data": self.get_serialized_data(obj),
-            "object_repr": force_text(obj),
+            "object_repr": force_str(obj),
         }
 
 
@@ -537,7 +537,7 @@ class RevisionManager(object):
             versions = versions.filter(object_id_int=object_id_int)
         else:
             # We can't do this using an index. Never mind.
-            object_id = force_text(object_id)
+            object_id = force_str(object_id)
             versions = versions.filter(object_id=object_id)
         versions = versions.order_by("-pk")
         return versions
