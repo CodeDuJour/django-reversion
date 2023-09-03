@@ -44,6 +44,8 @@ class Revision(models.Model):
 
     """A group of related object versions."""
 
+    id = models.AutoField(primary_key=True)
+
     manager_slug = models.CharField(
         max_length = 191,
         db_index = True,
@@ -128,6 +130,8 @@ class VersionQuerySet(models.QuerySet):
 class Version(models.Model):
 
     """A saved version of a database model."""
+
+    id = models.AutoField(primary_key=True)
 
     objects = VersionQuerySet.as_manager()
 
